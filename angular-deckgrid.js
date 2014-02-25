@@ -18,7 +18,7 @@ angular.module('akoenig.deckgrid').directive('deckgrid', [
 
     'DeckgridDescriptor',
 
-    function initialize (DeckgridDescriptor) {
+    function initialize(DeckgridDescriptor) {
 
         'use strict';
 
@@ -43,7 +43,7 @@ angular.module('akoenig.deckgrid').factory('DeckgridDescriptor', [
     'Deckgrid',
     '$templateCache',
 
-    function initialize (Deckgrid, $templateCache) {
+    function initialize(Deckgrid, $templateCache) {
 
         'use strict';
 
@@ -52,12 +52,12 @@ angular.module('akoenig.deckgrid').factory('DeckgridDescriptor', [
          * directive description object.
          *
          */
-        function Descriptor () {
+        function Descriptor() {
             this.restrict = 'AE';
 
             this.template = '<div data-ng-repeat="column in columns" class="{{layout.classList}}">' +
-                                '<div data-ng-repeat="card in column" data-ng-include="cardTemplate"></div>' +
-                            '</div>';
+                '<div data-ng-repeat="card in column" data-ng-include="cardTemplate"></div>' +
+                '</div>';
 
             this.scope = {
                 'model': '=source'
@@ -78,7 +78,7 @@ angular.module('akoenig.deckgrid').factory('DeckgridDescriptor', [
          * deckgrid directive should be destroyed.
          *
          */
-        Descriptor.prototype.$$destroy = function $$destroy () {
+        Descriptor.prototype.$$destroy = function $$destroy() {
             this.$$deckgrid.destroy();
         };
 
@@ -88,13 +88,13 @@ angular.module('akoenig.deckgrid').factory('DeckgridDescriptor', [
          * The deckgrid link method. Will instantiate the deckgrid.
          *
          */
-        Descriptor.prototype.$$link = function $$link (scope, elem, attrs, nullController, transclude) {
+        Descriptor.prototype.$$link = function $$link(scope, elem, attrs, nullController, transclude) {
             scope.$on('$destroy', this.$$destroy.bind(this));
 
             if (attrs.cardtemplate === undefined) {
                 if (attrs.cardtemplatestring === undefined) {
                     // use the provided inner html as template
-                    transclude(scope, function onTransclude (innerHTML) {
+                    transclude(scope, function onTransclude(innerHTML) {
                         var extractedInnerHTML = [],
                             i = 0,
                             len = innerHTML.length,
@@ -130,7 +130,7 @@ angular.module('akoenig.deckgrid').factory('DeckgridDescriptor', [
         };
 
         return {
-            create : function create () {
+            create: function create() {
                 return new Descriptor();
             }
         };
@@ -155,7 +155,7 @@ angular.module('akoenig.deckgrid').factory('Deckgrid', [
     '$window',
     '$log',
 
-    function initialize ($window, $log) {
+    function initialize($window, $log) {
 
         'use strict';
 
@@ -163,7 +163,7 @@ angular.module('akoenig.deckgrid').factory('Deckgrid', [
          * The deckgrid directive.
          *
          */
-        function Deckgrid (scope, element) {
+        function Deckgrid(scope, element) {
             var self = this,
                 watcher;
 
@@ -191,8 +191,8 @@ angular.module('akoenig.deckgrid').factory('Deckgrid', [
             //
             // Register media query change events.
             //
-            angular.forEach(self.$$getMediaQueries(), function onIteration (rule) {
-                function onDestroy () {
+            angular.forEach(self.$$getMediaQueries(), function onIteration(rule) {
+                function onDestroy() {
                     rule.removeListener(self.$$onMediaQueryChange.bind(self));
                 }
 
@@ -213,7 +213,7 @@ angular.module('akoenig.deckgrid').factory('Deckgrid', [
          * @return {array} An array with all respective styles.
          *
          */
-        Deckgrid.prototype.$$getMediaQueries = function $$getMediaQueries () {
+        Deckgrid.prototype.$$getMediaQueries = function $$getMediaQueries() {
             var stylesheets = [],
                 mediaQueries = [];
 
@@ -222,7 +222,7 @@ angular.module('akoenig.deckgrid').factory('Deckgrid', [
                 Array.prototype.slice.call(document.querySelectorAll('link[rel=\'stylesheet\']'))
             );
 
-            function extractRules (stylesheet) {
+            function extractRules(stylesheet) {
                 try {
                     return (stylesheet.sheet.cssRules || []);
                 } catch (e) {
@@ -230,9 +230,9 @@ angular.module('akoenig.deckgrid').factory('Deckgrid', [
                 }
             }
 
-            function hasDeckgridStyles (rule) {
-                var regexe   = /\[(\w*-)?deckgrid\]::?before/g,
-                    i        = 0,
+            function hasDeckgridStyles(rule) {
+                var regexe = /\[(\w*-)?deckgrid\]::?before/g,
+                    i = 0,
                     selector = '';
 
                 if (!rule.media || angular.isUndefined(rule.cssRules)) {
@@ -252,10 +252,10 @@ angular.module('akoenig.deckgrid').factory('Deckgrid', [
                 return false;
             }
 
-            angular.forEach(stylesheets, function onIteration (stylesheet) {
+            angular.forEach(stylesheets, function onIteration(stylesheet) {
                 var rules = extractRules(stylesheet);
 
-                angular.forEach(rules, function inRuleIteration (rule) {
+                angular.forEach(rules, function inRuleIteration(rule) {
                     if (hasDeckgridStyles(rule)) {
                         mediaQueries.push($window.matchMedia(rule.media.mediaText));
                     }
@@ -278,17 +278,17 @@ angular.module('akoenig.deckgrid').factory('Deckgrid', [
          * NOTE that calling this method will trigger a complete template "redraw".
          *
          */
-        Deckgrid.prototype.$$createColumns = function $$createColumns () {
+        Deckgrid.prototype.$$createColumns = function $$createColumns() {
             var self = this;
 
             if (!this.$$scope.layout) {
                 return $log.error('angular-deckgrid: No CSS configuration found (see ' +
-                                   'https://github.com/akoenig/angular-deckgrid#the-grid-configuration)');
+                    'https://github.com/akoenig/angular-deckgrid#the-grid-configuration)');
             }
 
             this.$$scope.columns = [];
 
-            angular.forEach(this.$$scope.model, function onIteration (card, index) {
+            angular.forEach(this.$$scope.model, function onIteration(card, index) {
                 var column = (index % self.$$scope.layout.columns) | 0;
 
                 if (!self.$$scope.columns[column]) {
@@ -317,13 +317,13 @@ angular.module('akoenig.deckgrid').factory('Deckgrid', [
          * You are responsible for defining the respective styles within your CSS.
          *
          */
-        Deckgrid.prototype.$$getLayout = function $$getLayout () {
+        Deckgrid.prototype.$$getLayout = function $$getLayout() {
             var content = $window.getComputedStyle(this.$$elem, ':before').content,
                 layout;
 
             if (content) {
-                content = content.replace(/'/g, '');  // before e.g. '3 .column.size-1of3'
-                content = content.replace(/"/g, '');  // before e.g. "3 .column.size-1of3"
+                content = content.replace(/'/g, ''); // before e.g. '3 .column.size-1of3'
+                content = content.replace(/"/g, ''); // before e.g. "3 .column.size-1of3"
                 content = content.split(' ');
 
                 if (2 === content.length) {
@@ -342,7 +342,7 @@ angular.module('akoenig.deckgrid').factory('Deckgrid', [
          * Event that will be triggered if a CSS media query changed.
          *
          */
-        Deckgrid.prototype.$$onMediaQueryChange = function $$onMediaQueryChange () {
+        Deckgrid.prototype.$$onMediaQueryChange = function $$onMediaQueryChange() {
             var self = this,
                 layout = this.$$getLayout();
 
@@ -353,7 +353,7 @@ angular.module('akoenig.deckgrid').factory('Deckgrid', [
             if (layout.columns !== this.$$scope.layout.columns) {
                 self.$$scope.layout = layout;
 
-                self.$$scope.$apply(function onApply () {
+                self.$$scope.$apply(function onApply() {
                     self.$$createColumns();
                 });
             }
@@ -365,10 +365,10 @@ angular.module('akoenig.deckgrid').factory('Deckgrid', [
          * Event that will be triggered when the source model has changed.
          *
          */
-        Deckgrid.prototype.$$onModelChange = function $$onModelChange (newModel, oldModel) {
+        Deckgrid.prototype.$$onModelChange = function $$onModelChange(newModel, oldModel) {
             var self = this;
 
-            if (oldModel.length !== newModel.length) {
+            if (oldModel !== newModel) {
                 self.$$createColumns();
             }
         };
@@ -378,7 +378,7 @@ angular.module('akoenig.deckgrid').factory('Deckgrid', [
          * watchers and event handlers.
          *
          */
-        Deckgrid.prototype.destroy = function destroy () {
+        Deckgrid.prototype.destroy = function destroy() {
             var i = this.$$watchers.length - 1;
 
             for (i; i >= 0; i = i - 1) {
@@ -387,7 +387,7 @@ angular.module('akoenig.deckgrid').factory('Deckgrid', [
         };
 
         return {
-            create : function create (scope, element) {
+            create: function create(scope, element) {
                 return new Deckgrid(scope, element);
             }
         };
